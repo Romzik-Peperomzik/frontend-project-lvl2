@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { program } from 'commander';
-import genDiff from '../src/diffJSON.js'
+import getDiffJSON from '../src/diffJSON.js';
 
 program
   .description('Compares two configuration files and shows a difference.')
@@ -8,8 +8,6 @@ program
   .option('-f, --format <type>', 'output format')
   .arguments('<filepath1>')
   .arguments('<filepath2>')
-  .action((filepath1, filepath2) => {
-    console.log(genDiff(filepath1, filepath2));
-  });
+  .action((filepath1, filepath2) => getDiffJSON(filepath1, filepath2));
 
 program.parse();
