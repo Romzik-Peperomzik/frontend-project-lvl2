@@ -1,9 +1,20 @@
 name: tests-check
 on: [push]
 jobs:
-  linter-checking:
+  test:
+    name: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2  
       - run: make install
       - run: make test
+  coverage:
+    needs: [ test ]
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: paambaati/codeclimate-action@v3.0.0
+      - env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      - with:
+          coverageCommand: npx --jest coverage
