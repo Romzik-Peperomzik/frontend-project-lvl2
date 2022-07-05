@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import readJSON from './utils/readJSON.js';
+import { readFileSync } from 'node:fs';
 
 const getDiffJSON = (...filePaths) => {
-  const parseJSONFiles = (file1, file2) => {
+  const processJSONFiles = (file1, file2) => {
     const keys = _.sortedUniq([...Object.keys(file1), ...Object.keys(file2)].sort());
     return keys.flatMap((key) => {
       if (Object.hasOwn(file1, key) && Object.hasOwn(file2, key)) {
@@ -18,9 +18,10 @@ const getDiffJSON = (...filePaths) => {
     });
   };
 
-  const jsonFiles = filePaths.map((filePath) => readJSON(filePath));
-  const jsonDiffArray = parseJSONFiles(...jsonFiles);
-  return `{\n  ${jsonDiffArray.join('\n  ').replaceAll('\n\n', '\n')}\n}`;
+  const parsedJSONFiles = filePaths.map((filePath) => JSON.parse(readFileSync(filePath, 'utf8')));
+  const jsonFilesDiffArray = processJSONFiles(...parsedJSONFiles);
+  // console.log(`{\n  ${jsonFilesDiffArray.join('\n  ').replaceAll('\n\n', '\n')}\n}`);
+  return `{\n  ${jsonFilesDiffArray.join('\n  ').replaceAll('\n\n', '\n')}\n}`;
 };
 
 export default getDiffJSON;

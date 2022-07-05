@@ -1,14 +1,14 @@
 import { expect, test } from '@jest/globals';
-import readfileSync from 'fs';
-
-import readJSON from '../src/utils/readJSON.js';
+import { readFileSync } from 'node:fs';
 import getDiffJSON from '../src/diffJSON.js';
 
 test('getDiffJSON', () => {
-  const filePaths = ['../__fixtures__/file1.json', '../__fixtures__/file2.json'];
-  const answerFile = '../__fixtures__/getDiffJSON.expected.txt';
+  const [jsonFilePath1, jsonFilePath2, answerFilePath] = [
+    './__fixtures__/file1.json',
+    './__fixtures__/file2.json',
+    './__fixtures__/getDiffJSON.expected.txt',
+  ];
 
-  const [jsonFile1, jsonFile2] = filePaths.map((path) => readJSON(path));
-  const getDiffJSONExpectedAnsw = readfileSync(answerFile);
-  expect(getDiffJSON(jsonFile1, jsonFile2)).toEqual(getDiffJSONExpectedAnsw);
+  const expectedAnswer = readFileSync(answerFilePath, 'utf8');
+  expect(getDiffJSON(jsonFilePath1, jsonFilePath2)).toEqual(expectedAnswer);
 });
