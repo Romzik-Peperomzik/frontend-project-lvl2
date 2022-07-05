@@ -5,16 +5,20 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2  
-      - run: make install
-      - run: make test
+    - uses: actions/checkout@v2  
+    - run: make install
+    - run: make test
   coverage:
     needs: [ test ]
     name: coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: paambaati/codeclimate-action@v3.0.0
-      - env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      - with:
-          coverageCommand: npx --jest coverage
+    - uses: actions/checkout@v2  
+    - run: make install
+    - run: make test
+    - uses: paambaati/codeclimate-action@v3.0.0
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      with:
+        coverageCommand: make test-coverage
+        debug: true
