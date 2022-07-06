@@ -8,6 +8,10 @@
 ```sh
 make install
 ```
+## How to use:
+```sh
+gendiff file1.json file2.json
+```
 ## Functionality:
 <details>
 <summary><h4>genDiff with two flat files:</h4></summary>
