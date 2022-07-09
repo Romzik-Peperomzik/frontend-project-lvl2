@@ -1,27 +1,34 @@
 import _ from 'lodash';
 import parseFile from './parsers.js';
 
-const processDiffFiles = (...filePaths) => {
-  const processParsedFiles = (file1, file2) => {
-    const keys = _.sortedUniq([...Object.keys(file1), ...Object.keys(file2)].sort());
-    return keys.flatMap((key) => {
-      if (Object.hasOwn(file1, key) && Object.hasOwn(file2, key)) {
-        if (_.isEqual(file1[key], file2[key])) {
-          return `  ${key}: ${file1[key]}`;
+const processDiffFiles = (filePath1, filepath2, replacer = ' ', spacesCount = 4) => {
+  const iter = (obj1, obj2, depth = 1) => {
+    const keys = _.sortedUniq([...Object.keys(obj1), ...Object.keys(obj2)].sort());
+    const indentSize = depth * spacesCount;
+    const currentIndent = replacer.repeat(indentSize);
+    const plusIndent = `${replacer.repeat(indentSize - 2)}+ `;
+    const minusIndent = `${replacer.repeat(indentSize - 2)}- `;
+    // const bracketIndent = replacer.repeat(indentSize - spacesCount);
+    const foo = keys.map((key) => {
+      if (_.has(obj1, key) && _.has(obj2, key)) {
+        if (_.isEqual(obj1[key], obj2[key])) {
+          return `${currentIndent}${key}: ${obj1[key]}`;
         }
-        return [`- ${key}: ${file1[key]}`, `+ ${key}: ${file2[key]}`];
+        return `${minusIndent}${key}: ${obj1[key]}\n${plusIndent}${key}: ${obj2[key]}`;
       }
-      if (Object.hasOwn(file1, key)) {
-        return `- ${key}: ${file1[key]}`;
+      if (_.has(obj1, key)) {
+        return `${minusIndent}${key}: ${obj1[key]}`;
       }
-      return `+ ${key}: ${file2[key]}`;
+      return `${plusIndent}${key}: ${obj2[key]}`;
     });
+    // console.log(foo);
+    return foo;
   };
 
-  const parsedFiles = filePaths.map((filePath) => parseFile(filePath));
-  const parsedFilesDiffArray = processParsedFiles(...parsedFiles);
-  console.log(`{\n  ${parsedFilesDiffArray.join('\n  ').replaceAll('\n\n', '\n')}\n}`);
-  return `{\n  ${parsedFilesDiffArray.join('\n  ').replaceAll('\n\n', '\n')}\n}`;
+  const parsedFiles = [filePath1, filepath2].map((filePath) => parseFile(filePath));
+  const arrayToFormatting = iter(...parsedFiles);
+  console.log(`{\n${arrayToFormatting.join('\n').replaceAll('\n\n', '\n')}\n}`);
+  return `{\n${arrayToFormatting.join('\n').replaceAll('\n\n', '\n')}\n}`;
 };
 
 export default processDiffFiles;
