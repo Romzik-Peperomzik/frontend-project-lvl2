@@ -9,12 +9,12 @@ let yamlFilePath1;
 let yamlFilePath2;
 
 beforeAll(() => {
-  expectedAnswer = readFile(getFixturePath('processDiff.flat.expected.txt'));
+  expectedAnswer = readFile(getFixturePath('processDiff.nested.expected.txt'));
   const fileNames = [
-    'file1.json',
-    'file2.json',
-    'file1.yaml',
-    'file2.yaml',
+    'file1_nested.json',
+    'file2_nested.json',
+    'file1_nested.yaml',
+    'file2_nested.yaml',
   ];
   [
     jsonFilePath1,
