@@ -1,4 +1,4 @@
-import formatter from './formatter/index.js';
+import formatter from './formatters/index.js';
 import parseFile from './parsers.js';
 import diff from './diff.js';
 

@@ -16,10 +16,9 @@ const stylish = (arrayWithObjectsForFormatting, replacer = ' ', spacesCount = 4)
         specIndent = replacer.repeat(indentSize);
         break;
     }
-    if (!_.isArray(obj.value)) {
-      return `${specIndent}${obj.node}: ${obj.value}`;
-    }
-    return `${specIndent}${obj.node}: {\n${obj.value.map((item) => iter(item, depth + 1)).join('\n')}\n${indent}}`;
+    return !_.isArray(obj.value)
+      ? `${specIndent}${obj.node}: ${obj.value}`
+      : `${specIndent}${obj.node}: {\n${obj.value.map((item) => iter(item, depth + 1)).join('\n')}\n${indent}}`;
   };
   const result = arrayWithObjectsForFormatting.map((obj) => iter(obj));
   return `{\n${result.join('\n').replace(',', '')}\n}`;
