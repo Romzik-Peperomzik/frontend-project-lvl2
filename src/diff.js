@@ -16,15 +16,14 @@ const diff = (obj1, obj2) => {
       ) {
         return { status: 'unchanged', node: key, value: diff(obj1[key], obj2[key] || {}) };
       }
-      return [
-        { status: 'removed', node: key, value: diff(obj1[key], {}) },
-        { status: 'added', node: key, value: diff(obj2[key], {}) },
-      ];
+      return {
+        status: 'updated', node: key, value: diff(obj1[key], {}), newValue: diff(obj2[key], {}),
+      };
     }
     return _.has(obj1, key)
       ? { status: 'removed', node: key, value: diff(obj1[key], {}) }
       : { status: 'added', node: key, value: diff(obj2[key], {}) };
-  }).flat();
+  });
 };
 
 export default diff;

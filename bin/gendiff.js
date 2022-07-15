@@ -9,7 +9,8 @@ program
   .arguments('<filepath1>')
   .arguments('<filepath2>')
   .action((filepath1, filepath2) => {
-    console.log(processDiffFiles(filepath1, filepath2));
+    const options = program.opts();
+    console.log(processDiffFiles(filepath1, filepath2, options.format));
   });
 
 program.parse();
