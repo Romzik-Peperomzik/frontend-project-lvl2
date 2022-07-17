@@ -1,26 +1,28 @@
 import _ from 'lodash';
 
-const processNode = (nodeName, value, status, ancestry) => {
-  const newValue = _.isArray(value) ? '[complex value]' : value;
-  return { [nodeName]: { ancestry, status, value: newValue } };
+const processNode = (obj, ancestry) => {
+  const [nodeName, status, value] = [obj.node, obj.status, obj.value];
+  const complexValue = _.isArray(value) ? '[complex value]' : value;
+  if (obj.status === 'updated') {
+    const complexNewValue = _.isArray(obj.newValue) ? '[complex value]' : obj.newValue;
+    return {
+      [nodeName]: {
+        ancestry, newValue: complexNewValue, status, value: complexValue,
+      },
+    };
+  }
+  return { [nodeName]: { ancestry, status, value: complexValue } };
 };
 
 const plain = (arrayWithObjectsForFormatting) => {
   const iter = (obj, ancestry = '') => {
     const updAncestry = ancestry ? `${ancestry}.${obj.node}` : obj.node;
-    const currentNode = processNode(obj.node, obj.value, obj.status, updAncestry);
+    const currentNode = processNode(obj, updAncestry);
     if (!_.isArray(obj.value)) {
       return currentNode;
     }
     const valuesOfCurrentNode = obj.value.reduce((acc, node) => {
       const processedNodes = iter(node, updAncestry);
-      const nodesToUpdated = _.union(Object.keys.processedNodes, Object.keys.acc);
-      if (nodesToUpdated.length > 0) {
-        nodesToUpdated.forEach((item) => {
-          const [newAncestry, , newValue] = processedNodes[item];
-          processedNodes[item] = { ancestry: newAncestry, status: 'updated', value: newValue };
-        });
-      }
       return { ...acc, ...processedNodes };
     }, {});
     return { ...currentNode, ...valuesOfCurrentNode };
