@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "frontend-project-lvl2",
   "type": "module",
-  "main": "bin/gendiff.js",
+  "main": "src/processDiff.js",
   "bin": {
     "gendiff": "bin/gendiff.js"
   },
