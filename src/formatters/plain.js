@@ -6,6 +6,7 @@ const specifyValue = (value) => {
     case false:
     case null:
     case '[complex value]':
+    case !Number.isNaN(value):
       return true;
     default:
       return false;
