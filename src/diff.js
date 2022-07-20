@@ -23,8 +23,7 @@ const diff = (obj1 = {}, obj2 = {}) => {
       return { ...preparedNode, status: 'unchanged', value: diff(val1 || val2) };
     }
     if (_.has(obj1, key) && _.has(obj2, key)) {
-      if (val1 === val2) return { ...preparedNode, status: 'unchanged', value: val1 };
-      if (_.isPlainObject(val1) && _.isPlainObject(val2)) {
+      if ((val1 === val2) || (_.isPlainObject(val1) && _.isPlainObject(val2))) {
         return { ...preparedNode, status: 'unchanged', value: diff(val1, val2 || {}) };
       }
       return {
