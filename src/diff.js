@@ -4,7 +4,8 @@ const diff = (obj1, obj2) => {
   if ((!_.isPlainObject(obj1) && !_.isPlainObject(obj2))
     || (!_.isPlainObject(obj1) && Object.keys(obj2).length === 0)
   ) return obj1;
-  const totalKeys = _.sortedUniq([...Object.keys(obj1), ...Object.keys(obj2)].sort());
+
+  const totalKeys = _.sortBy(_.union(Object.keys(obj1), Object.keys(obj2)));
 
   return totalKeys.map((key) => {
     if (Object.keys(obj2).length === 0 || Object.keys(obj1).length === 0) {
