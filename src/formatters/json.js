@@ -1,3 +1,3 @@
-const json = (items) => JSON.stringify(items);
+const json = (processedAST) => JSON.stringify(processedAST);
 
 export default json;

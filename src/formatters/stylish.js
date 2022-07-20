@@ -24,7 +24,7 @@ const processUpdNode = (obj, indentSize, indent, nestedPart = false, firstChildN
     : `${negIndent}${node}: ${value}\n${posIndent}${node}: {\n${nestedPart}\n${indent}}`;
 };
 
-const stylish = (arrayWithObjectsForFormatting, spacesCount = 4) => {
+const stylish = (processedAST, spacesCount = 4) => {
   const iter = (obj, depth = 1) => {
     const indentSize = depth * spacesCount;
     const indent = makeIndent(indentSize);
@@ -45,7 +45,7 @@ const stylish = (arrayWithObjectsForFormatting, spacesCount = 4) => {
       ? `${specIndent}${obj.node}: ${obj.value}`
       : `${specIndent}${obj.node}: {\n${obj.value.map((item) => iter(item, depth + 1)).join('\n')}\n${indent}}`;
   };
-  const result = arrayWithObjectsForFormatting.map((obj) => iter(obj));
+  const result = processedAST.map((obj) => iter(obj));
   return `{\n${result.join('\n').replace(',', '')}\n}`;
 };
 

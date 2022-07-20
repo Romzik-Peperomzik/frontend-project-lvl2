@@ -31,19 +31,19 @@ const processNode = (obj, ancestry) => {
   }
 };
 
-const plain = (arrayWithObjectsForFormatting) => {
+const plain = (processedAST) => {
   const iter = (obj, ancestry = '') => {
     if (!_.isArray(obj)) {
       const updAncestry = ancestry ? `${ancestry}.${obj.node}` : obj.node;
       const currentNode = processNode(obj, updAncestry);
-      if (!_.isArray(obj.value)) {
+      if (!obj.children) {
         return currentNode;
       }
       return [currentNode, ...iter(obj.value, updAncestry)].filter((item) => item).join('\n');
     }
     return obj.map((item) => iter(item, ancestry));
   };
-  return iter(arrayWithObjectsForFormatting).join('\n');
+  return iter(processedAST).join('\n');
 };
 
 export default plain;
