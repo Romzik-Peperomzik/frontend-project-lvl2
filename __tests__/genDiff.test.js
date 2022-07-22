@@ -1,6 +1,14 @@
 import { expect, test } from '@jest/globals';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import fs from 'fs';
 import genDiff from '../src/index.js';
-import { getFixturePath, readFile } from '../src/readFiles.js';
+
+const filePath = fileURLToPath(import.meta.url);
+const dirPath = path.dirname(filePath);
+
+const getFixturePath = (filename) => path.join(dirPath, '..', '__fixtures__', filename);
+const readFile = (filepath) => fs.readFileSync(filepath, 'utf-8');
 
 const expectedAnswerDefaultStyle = readFile(getFixturePath('genDiff.stylish.expected.txt'));
 const expectedAnswerPlainStyle = readFile(getFixturePath('genDiff.plain.expected.txt'));

@@ -1,15 +1,12 @@
 import * as yaml from 'js-yaml';
-import { extname } from 'node:path';
-import { readFile } from './readFiles.js';
 
-const parseFile = (filePath) => {
-  const extension = extname(filePath);
-  switch (extension) {
+const parseFile = (file, type) => {
+  switch (type) {
     case '.yml':
     case '.yaml':
-      return yaml.load(readFile(filePath));
+      return yaml.load(file);
     default: // .js
-      return JSON.parse(readFile(filePath));
+      return JSON.parse(file);
   }
 };
 
