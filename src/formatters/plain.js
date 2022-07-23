@@ -14,8 +14,8 @@ const specifyValue = (value) => {
 };
 
 const processNode = (obj, ancestry) => {
-  const complexValue = _.isArray(obj.value) ? '[complex value]' : obj.value;
-  const newComplexValue = _.isArray(obj.newValue) ? '[complex value]' : obj.newValue;
+  const complexValue = _.isPlainObject(obj.value) ? '[complex value]' : obj.value;
+  const newComplexValue = _.isPlainObject(obj.value1) ? '[complex value]' : obj.value1;
   const oldValue = specifyValue(complexValue) ? complexValue : `'${complexValue}'`;
   const newValue = specifyValue(newComplexValue) ? newComplexValue : `'${newComplexValue}'`;
 
@@ -39,7 +39,7 @@ const plain = (processedAST) => {
       if (!obj.children) {
         return currentNode;
       }
-      return [currentNode, ...iter(obj.value, updAncestry)].filter((item) => item).join('\n');
+      return [currentNode, ...iter(obj.children, updAncestry)].filter((item) => item).join('\n');
     }
     return obj.map((item) => iter(item, ancestry));
   };

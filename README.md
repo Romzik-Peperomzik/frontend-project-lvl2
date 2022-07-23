@@ -41,5 +41,5 @@ Options:
 
 <details>
 <summary><h4>JSON format:</h4></summary>
-  <a href="https://asciinema.org/a/3NHtBlJWmbpXls8Gwjffsmxb4" target="_blank"><img src="https://asciinema.org/a/3NHtBlJWmbpXls8Gwjffsmxb4.svg" /></a>
+  <a href="https://asciinema.org/a/d3wIUwryO58mY1OwzZcBV9VWU" target="_blank"><img src="https://asciinema.org/a/d3wIUwryO58mY1OwzZcBV9VWU.svg" /></a>
 </details>

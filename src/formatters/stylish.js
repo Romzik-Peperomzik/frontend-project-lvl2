@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
-const makeIndent = (indentSize, status = null, replacer = ' ') => {
+const makeIndent = (depth, status = null, spacesCount = 4, replacer = ' ') => {
+  const indentSize = depth * spacesCount;
   switch (status) {
     case 'removed':
       return `${replacer.repeat(indentSize - 2)}- `;
@@ -13,37 +14,39 @@ const makeIndent = (indentSize, status = null, replacer = ' ') => {
   }
 };
 
-const processUpdNode = (obj, indentSize, indent, nestedPart = false, firstChildNested = false) => {
-  const [negIndent, posIndent] = [makeIndent(indentSize, 'removed'), makeIndent(indentSize, 'added')];
-  const [node, value, newValue] = [obj.node, obj.value, obj.newValue];
+const processUpdNode = (obj, depth, nestedPart = false, firstChildNested = false) => {
+  const [indent, negIndent, posIndent] = [makeIndent(depth), makeIndent(depth, 'removed'), makeIndent(depth, 'added')];
+  const [node, value, value1] = [obj.node, obj.value, obj.value1];
+
   if (!nestedPart) {
-    return `${negIndent}${node}: ${value}\n${posIndent}${node}: ${newValue}`;
+    return `${negIndent}${node}: ${value}\n${posIndent}${node}: ${value1}`;
   }
   return firstChildNested
-    ? `${negIndent}${node}: {\n${nestedPart}\n${indent}}\n${posIndent}${node}: ${newValue}`
+    ? `${negIndent}${node}: {\n${nestedPart}\n${indent}}\n${posIndent}${node}: ${value1}`
     : `${negIndent}${node}: ${value}\n${posIndent}${node}: {\n${nestedPart}\n${indent}}`;
 };
 
-const stylish = (processedAST, spacesCount = 4) => {
+const stylish = (processedAST) => {
   const iter = (obj, depth = 1) => {
-    const indentSize = depth * spacesCount;
-    const indent = makeIndent(indentSize);
-    const specIndent = makeIndent(indentSize, obj.status);
-
-    if (obj.status === 'updated') {
-      if (obj.children) {
-        if (_.isArray(obj.value)) {
-          const nestedPart = obj.value.map((item) => iter(item, depth + 1)).join('\n');
-          return processUpdNode(obj, indentSize, indent, nestedPart, true);
-        }
-        const nestedPart = obj.newValue.map((item) => iter(item, depth + 1)).join('\n');
-        return processUpdNode(obj, indentSize, indent, nestedPart);
-      }
-      return processUpdNode(obj, indentSize, indent);
+    const [indent, specIndent] = [makeIndent(depth), makeIndent(depth, obj.status)];
+    if (obj.children) return `${specIndent}${obj.node}: {\n${obj.children.map((item) => iter(item, depth + 1)).join('\n')}\n${indent}}`;
+    if (!obj.status) {
+      return Object.keys(obj).map((key) => {
+        if (!_.isPlainObject(obj[key])) return `${indent}${key}: ${obj[key]}`;
+        return `${indent}${key}: {\n${iter(obj[key], depth + 1)}\n${indent}}`;
+      }).join('\n');
     }
-    return !obj.children
+    if (obj.status === 'updated') {
+      if (!_.isPlainObject(obj.value) && !_.isPlainObject(obj.value1)) {
+        return processUpdNode(obj, depth);
+      }
+      return _.isPlainObject(obj.value)
+        ? processUpdNode(obj, depth, iter(obj.value, depth + 1), true)
+        : processUpdNode(obj, depth, iter(obj.value1, depth + 1));
+    }
+    return (!_.isPlainObject(obj.value))
       ? `${specIndent}${obj.node}: ${obj.value}`
-      : `${specIndent}${obj.node}: {\n${obj.value.map((item) => iter(item, depth + 1)).join('\n')}\n${indent}}`;
+      : `${specIndent}${obj.node}: {\n${iter(obj.value, depth + 1)}\n${indent}}`;
   };
   const result = processedAST.map((obj) => iter(obj));
   return `{\n${result.join('\n').replace(',', '')}\n}`;
