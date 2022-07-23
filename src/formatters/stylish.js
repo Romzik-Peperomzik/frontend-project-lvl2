@@ -15,12 +15,12 @@ const makeIndent = (indentSize, status = null, replacer = ' ') => {
 
 const processUpdNode = (obj, indentSize, indent, nestedPart = false, firstChildNested = false) => {
   const [negIndent, posIndent] = [makeIndent(indentSize, 'removed'), makeIndent(indentSize, 'added')];
-  const [node, value, newValue] = [obj.node, obj.value, obj.newValue];
+  const [node, value, value1] = [obj.node, obj.value, obj.value1];
   if (!nestedPart) {
-    return `${negIndent}${node}: ${value}\n${posIndent}${node}: ${newValue}`;
+    return `${negIndent}${node}: ${value}\n${posIndent}${node}: ${value1}`;
   }
   return firstChildNested
-    ? `${negIndent}${node}: {\n${nestedPart}\n${indent}}\n${posIndent}${node}: ${newValue}`
+    ? `${negIndent}${node}: {\n${nestedPart}\n${indent}}\n${posIndent}${node}: ${value1}`
     : `${negIndent}${node}: ${value}\n${posIndent}${node}: {\n${nestedPart}\n${indent}}`;
 };
 
@@ -31,17 +31,17 @@ const stylish = (processedAST, spacesCount = 4) => {
     const specIndent = makeIndent(indentSize, obj.status);
 
     if (obj.status === 'updated') {
-      if (obj.children) {
-        if (_.isArray(obj.value)) {
-          const nestedPart = obj.value.map((item) => iter(item, depth + 1)).join('\n');
-          return processUpdNode(obj, indentSize, indent, nestedPart, true);
-        }
-        const nestedPart = obj.newValue.map((item) => iter(item, depth + 1)).join('\n');
+      if (_.isArray(obj.value)) {
+        const nestedPart = obj.value.map((item) => iter(item, depth + 1)).join('\n');
+        return processUpdNode(obj, indentSize, indent, nestedPart, true);
+      }
+      if (_.isArray(obj.value1)) {
+        const nestedPart = obj.value1.map((item) => iter(item, depth + 1)).join('\n');
         return processUpdNode(obj, indentSize, indent, nestedPart);
       }
       return processUpdNode(obj, indentSize, indent);
     }
-    return !obj.children
+    return !_.isArray(obj.value) // !obj.children
       ? `${specIndent}${obj.node}: ${obj.value}`
       : `${specIndent}${obj.node}: {\n${obj.value.map((item) => iter(item, depth + 1)).join('\n')}\n${indent}}`;
   };
