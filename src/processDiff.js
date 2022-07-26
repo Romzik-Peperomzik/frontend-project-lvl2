@@ -3,7 +3,7 @@ import parseFile from './parsers.js';
 import makeAST from './processAST.js';
 import readFileAndType from './readFiles.js';
 
-const processDiffFiles = (filePath1, filePath2, formatType = 'stylish') => {
+const genDiff = (filePath1, filePath2, formatType = 'stylish') => {
   const dataWithTypes = [filePath1, filePath2].map((fp) => readFileAndType(fp));
   const parsedDataset = dataWithTypes.map(([data, type]) => parseFile(data, type));
   const processedAST = makeAST(...parsedDataset);
@@ -11,4 +11,4 @@ const processDiffFiles = (filePath1, filePath2, formatType = 'stylish') => {
   return format(processedAST);
 };
 
-export default processDiffFiles;
+export default genDiff;
