@@ -6,7 +6,7 @@ import makeAST from './processAST.js';
 
 const readFileAndType = (filepath) => {
   const file = fs.readFileSync(filepath, 'utf-8');
-  const type = extname(filepath);
+  const type = extname(filepath).slice(1);
   return [file, type];
 };
 
