@@ -1,49 +1,37 @@
 import _ from 'lodash';
 
 const specifyValue = (value) => {
-  switch (value) {
-    case true:
-    case false:
-    case null:
-    case '[complex value]':
-    case +value:
-      return true;
-    default:
-      return false;
-  }
+  if (_.isPlainObject(value)) return '[complex value]';
+  if (typeof value === 'string') return `'${value}'`;
+  return value;
 };
 
 const processNode = (obj, ancestry) => {
-  const complexValue = _.isPlainObject(obj.value) ? '[complex value]' : obj.value;
-  const newComplexValue = _.isPlainObject(obj.value1) ? '[complex value]' : obj.value1;
-  const oldValue = specifyValue(complexValue) ? complexValue : `'${complexValue}'`;
-  const newValue = specifyValue(newComplexValue) ? newComplexValue : `'${newComplexValue}'`;
+  const [value, value1] = [specifyValue(obj.value), specifyValue(obj.value1)];
 
   switch (obj.status) {
     case 'updated':
-      return `Property '${ancestry}' was updated. From ${oldValue} to ${newValue}`;
+      return `Property '${ancestry}' was updated. From ${value} to ${value1}`;
     case 'added':
-      return `Property '${ancestry}' was added with value: ${oldValue}`;
+      return `Property '${ancestry}' was added with value: ${value}`;
     case 'removed':
       return `Property '${ancestry}' was removed`;
+    case 'nested':
+    case 'unchanged':
+      return undefined;
     default:
-      return '';
+      throw new Error(`unknown status: ${obj.status}`);
   }
 };
 
-const plain = (processedAST) => {
-  const iter = (obj, ancestry = '') => {
-    if (!_.isArray(obj)) {
-      const updAncestry = ancestry ? `${ancestry}.${obj.node}` : obj.node;
-      const currentNode = processNode(obj, updAncestry);
-      if (!obj.children) {
-        return currentNode;
-      }
-      return [currentNode, ...iter(obj.children, updAncestry)].filter((item) => item).join('\n');
-    }
-    return obj.map((item) => iter(item, ancestry));
-  };
-  return iter(processedAST).join('\n');
+const plain = (obj, ancestry = '') => {
+  const updAncestry = ancestry ? `${ancestry}.${obj.node}` : obj.node;
+  const currentNode = processNode(obj, updAncestry);
+  if (!obj.children) {
+    return currentNode;
+  }
+  const children = obj.children.map((child) => (plain(child, updAncestry))).filter((item) => item).join('\n');
+  return [currentNode, children].filter((item) => item).join('\n');
 };
 
-export default plain;
+export default (processedAST) => processedAST.map((item) => plain(item)).join('\n');
