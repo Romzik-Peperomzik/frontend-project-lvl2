@@ -10,7 +10,7 @@ const makeAST = (obj1, obj2) => {
       case !_.has(obj2, key):
         return { node: key, status: 'removed', value: val1 };
       case _.isPlainObject(val1) && _.isPlainObject(val2):
-        return { node: key, status: 'unchanged', children: makeAST(val1, val2) };
+        return { node: key, status: 'nested', children: makeAST(val1, val2) };
       case (val1 !== val2):
         return {
           node: key, status: 'updated', value: val1, value1: val2,
