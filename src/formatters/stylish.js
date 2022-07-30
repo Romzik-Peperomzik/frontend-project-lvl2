@@ -23,13 +23,15 @@ const stylish = (obj, depth = 1) => {
     case 'removed':
       return `${indent}${symbols[obj.status]}${obj.node}: ${stringify(obj.value, depth + 1)}`;
     case 'nested':
-      return `${indent}${symbols[obj.status]}${obj.node}: {\n${obj.children.map((item) => stylish(item, depth + 1)).join('\n')}\n${indent}  }`;
+      return `${indent}${symbols[obj.status]}${obj.node}: {\n${obj.children.flatMap((item) => stylish(item, depth + 1)).join('\n')}\n${indent}  }`;
     case 'updated':
-      return `${indent}${symbols.removed}${obj.node}: ${stringify(obj.value, depth + 1)}`
-        .concat('\n', `${indent}${symbols.added}${obj.node}: ${stringify(obj.value1, depth + 1)}`);
+      return [
+        `${indent}${symbols.removed}${obj.node}: ${stringify(obj.value, depth + 1)}`,
+        `${indent}${symbols.added}${obj.node}: ${stringify(obj.value1, depth + 1)}`,
+      ];
     default:
       throw new Error(`unknown status: ${obj.status}`);
   }
 };
 
-export default (processedAST) => `{\n${processedAST.map((obj) => stylish(obj)).join('\n').replace(',', '')}\n}`;
+export default (processedAST) => `{\n${processedAST.flatMap((obj) => stylish(obj)).join('\n')}\n}`;
